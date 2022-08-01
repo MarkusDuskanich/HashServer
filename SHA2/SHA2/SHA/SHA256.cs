@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace SHA2
+namespace BL.Hash.SHA256
 {
-    public class SHA256
+    public class SHA256 : IHash
     {
         private UInt32 _hash0 = 0x6a09e667;
         private UInt32 _hash1 = 0xbb67ae85;
@@ -83,10 +83,6 @@ namespace SHA2
             while ((_messageLengthBeforePadding + 1 + padding + 8) % 64 != 0)
             {
                 padding++;
-            }
-
-            for (int i = 0; i < padding; i++)
-            {
                 _messageAsBytes.Add(0);
             }
         }
@@ -195,7 +191,6 @@ namespace SHA2
 
             return words;
         }
-
 
         private void CreateFinalHashValue()
         {
