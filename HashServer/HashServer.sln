@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SHA2", "SHA2\SHA2.csproj", "{4ACBDC92-2858-43D0-B6CF-3E99FC0F59FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BL.Hash", "SHA2\BL.Hash.csproj", "{4ACBDC92-2858-43D0-B6CF-3E99FC0F59FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SHAApi", "SHAApi\SHAApi.csproj", "{3C8FBB8D-DE90-45DB-A01D-0D8C61F925C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BL.HashApi", "SHAApi\BL.HashApi.csproj", "{3C8FBB8D-DE90-45DB-A01D-0D8C61F925C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

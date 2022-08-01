@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace BL.Hash
 {
-    internal interface IHash
+    public interface IHash
     {
+        string Hash();
     }
 }
