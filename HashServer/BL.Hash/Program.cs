@@ -1,4 +1,4 @@
-﻿using SHA2;
+﻿using BL.Hash.SHA256;
 
 Console.WriteLine(new SHA256("abc").Hash());
 
