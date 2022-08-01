@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BitCollections;
+﻿using System.Text;
 
 namespace SHA2
 {
     public class SHA256
     {
-
         private UInt32 _hash0 = 0x6a09e667;
         private UInt32 _hash1 = 0xbb67ae85;
         private UInt32 _hash2 = 0x3c6ef372;
@@ -19,9 +12,6 @@ namespace SHA2
         private UInt32 _hash5 = 0x9b05688c;
         private UInt32 _hash6 = 0x1f83d9ab;
         private UInt32 _hash7 = 0x5be0cd19;
-
-        private BitList _message;
-        private readonly Int64 _originalMessageLength;
 
         private readonly UInt32[] _roundConstants = new UInt32[64]
         {
@@ -35,123 +25,113 @@ namespace SHA2
             0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
         };
 
-        private List<BitList> _chunks = new();
+        private readonly Int64 _messageLengthBeforePadding;
+        private readonly List<byte> _messageAsBytes;
+        private readonly List<UInt32> _messageAsUInt32s;
+
+        private UInt32[][] _chunks = default!;
+        private string? _finalHashValue = null;
 
         #region Constructors
 
         public SHA256(string message)
         {
-            _message = new BitList(Encoding.ASCII.GetBytes(message));
-            _originalMessageLength = _message.Count;
+            _messageAsBytes = new(Encoding.UTF8.GetBytes(message));
+            _messageAsUInt32s = new();
+            _messageLengthBeforePadding = _messageAsBytes.Count;
         }
-        
 
         public SHA256(byte[] message)
         {
-            throw new NotImplementedException();
+            _messageAsBytes = new(message);
+            _messageAsUInt32s = new();
+            _messageLengthBeforePadding = _messageAsBytes.Count;
         }
 
-        public SHA256(BitList message)
-        {
-            throw new NotImplementedException();
-        }
         #endregion
+
         public string Hash()
         {
+            if (_finalHashValue != null)
+                return _finalHashValue;
+
             Padding();
+            CreateMessageAsUInt32Array();
             ProcessMessage();
-            return FinalHashValue();
+            CreateFinalHashValue();
+            return _finalHashValue!;
         }
 
-        private string FinalHashValue()
+        #region Padding
+
+        private void Padding()
         {
-            var h0 = BitList.CreateFromUInt32(_hash0);
-            var h1 = BitList.CreateFromUInt32(_hash1);
-            var h2 = BitList.CreateFromUInt32(_hash2);
-            var h3 = BitList.CreateFromUInt32(_hash3);
-            var h4 = BitList.CreateFromUInt32(_hash4);
-            var h5 = BitList.CreateFromUInt32(_hash5);
-            var h6 = BitList.CreateFromUInt32(_hash6);
-            var h7 = BitList.CreateFromUInt32(_hash7);
+            PaddingAdd1();
+            PaddingAddZeros();
+            PaddingAddMessageLengthAsInt64();
+        }
 
-            var res = new BitList(0);
+        private void PaddingAddMessageLengthAsInt64()
+        {
+            BitConverter.GetBytes(_messageLengthBeforePadding).ToList().ForEach(b => _messageAsBytes.Add(b));
+        }
 
-            foreach (var bit in h0)
+        private void PaddingAddZeros()
+        {
+            //append zeros
+            int padding = 0;
+            while ((_messageLengthBeforePadding + 1 + padding + 8) % 64 != 0)
             {
-                res.Add(bit);
-            }
-            foreach (var bit in h1)
-            {
-                res.Add(bit);
-            }
-            foreach (var bit in h2)
-            {
-                res.Add(bit);
-            }
-            foreach (var bit in h3)
-            {
-                res.Add(bit);
-            }
-            foreach (var bit in h4)
-            {
-                res.Add(bit);
-            }
-            foreach (var bit in h5)
-            {
-                res.Add(bit);
-            }
-            foreach (var bit in h6)
-            {
-                res.Add(bit);
-            }
-            foreach (var bit in h7)
-            {
-                res.Add(bit);
+                padding++;
             }
 
-            return res.GetHexString().ToLower();
+            for (int i = 0; i < padding; i++)
+            {
+                _messageAsBytes.Add(0);
+            }
+        }
+
+        private void PaddingAdd1()
+        {
+            _messageAsBytes.Add(0b10000000);
+        }
+        #endregion
+
+        private void CreateMessageAsUInt32Array()
+        {
+            var messageAsBytesArray = _messageAsBytes.ToArray();
+            for (int i = 0; i <= messageAsBytesArray.Length - 4; i += 4)
+            {
+                _messageAsUInt32s.Add(BitConverter.ToUInt32(messageAsBytesArray, i));
+            }
         }
 
         private void ProcessMessage()
         {
-            //break message into chunks
-            var chunkCount = _message.Count / 512;
+            CreateChunksFromMessage();
+            CompressMessage();
+        }
+        private void CreateChunksFromMessage()
+        {
+            var chunkCount = _messageAsUInt32s.Count / 16;
+            _chunks = new UInt32[chunkCount][];
             for (int i = 0; i < chunkCount; i++)
             {
-                _chunks.Add(new BitList(512));
-                for (int j = 0; j < 512; j++)
+                _chunks[i] = new UInt32[16];
+                for (int j = 0; j < 16; j++)
                 {
-                    _chunks[i][j] = _message[i * 512 + j];
+                    _chunks[i][j] = _messageAsUInt32s[i * 16 + j];
+                    _chunks[i][j] = _messageAsUInt32s[i * 16 + j];
                 }
             }
+        }
 
+        private void CompressMessage()
+        {
             foreach (var chunk in _chunks)
             {
                 //create a 64 - entry message schedule array w[0..63] of 32 - bit words
-                BitList[] words = new BitList[64];
-                for (int i = 0; i < 64; i++)
-                {
-                    words[i] = new(32, false);
-                }
-
-                //copy chunk into first 16 words w[0..15] of the message schedule array
-                for (int i = 0; i < 16; i++)
-                {
-                    for (int j = 0; j < 32; j++)
-                    {
-                        words[i][j] = chunk[i * 32 + j];
-                    }
-                }
-
-                //Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
-                for (int i = 16; i < 64; i++)
-                {
-                    var s0 = words[i - 15].RightRotate(7).XOR(words[i - 15].RightRotate(18)).XOR(words[i - 15].RightShift(3));
-                    var s1 = words[i - 2].RightRotate(17).XOR(words[i - 2].RightRotate(19)).XOR(words[i - 2].RightShift(10));
-
-                    UInt32 result = words[i - 16].GetUInt32() + s0.GetUInt32() + words[i - 7].GetUInt32() + s1.GetUInt32();
-                    words[i] = BitList.CreateFromUInt32(result);
-                }
+                var words = CreateMessageScheduleArray(chunk);
 
                 // Initialize working variables to current hash value
                 var a = _hash0;
@@ -166,15 +146,12 @@ namespace SHA2
                 //Compression function main loop:
                 for (int i = 0; i < 63; i++)
                 {
-                    var s1 = BitList.CreateFromUInt32(e).RightRotate(6).XOR(BitList.CreateFromUInt32(e).RightRotate(11)).XOR(BitList.CreateFromUInt32(e).RightRotate(25));
-
-                    var ch = BitList.CreateFromUInt32(e).And(BitList.CreateFromUInt32(f)).XOR(BitList.CreateFromUInt32(e).Not().And(BitList.CreateFromUInt32(g)));
-                    var temp1 = h + s1.GetUInt32() + ch.GetUInt32() + _roundConstants[i] + words[i].GetUInt32();
-                    
-                    var s0 = BitList.CreateFromUInt32(a).RightRotate(2).XOR(BitList.CreateFromUInt32(a).RightRotate(13)).XOR(BitList.CreateFromUInt32(a).RightRotate(22));
-                    var maj = BitList.CreateFromUInt32(a).And(BitList.CreateFromUInt32(b)).XOR(BitList.CreateFromUInt32(a).And(BitList.CreateFromUInt32(c))).XOR(BitList.CreateFromUInt32(b).And(BitList.CreateFromUInt32(c)));
-                    
-                    var temp2 = s0.GetUInt32() + maj.GetUInt32();
+                    var S1 = RightRotate(e, 6) ^ RightRotate(e, 11) ^ RightRotate(e, 25);
+                    var ch = e & f ^ ~e & g;
+                    var temp1 = h + S1 + ch + _roundConstants[i] + words[i];
+                    var S0 = RightRotate(a, 2) ^ RightRotate(a, 13) ^ RightRotate(a, 22);
+                    var maj = a & b ^ a & c ^ b & c;
+                    var temp2 = S0 + maj;
 
                     h = g;
                     g = f;
@@ -197,50 +174,42 @@ namespace SHA2
             }
         }
 
-        #region Padding
-
-        private void Padding()
+        private static UInt32[] CreateMessageScheduleArray(UInt32[] chunk)
         {
-            PaddingAddSingle1();
-            PaddingAddZeros();
-            PaddingAddMessageLengthAsInt64();
-        }
+            UInt32[] words = new UInt32[64];
 
-        private void PaddingAddMessageLengthAsInt64()
-        {
-            //append length of original message as 64 big endian bit int
-            var bytes = BitConverter.GetBytes(_originalMessageLength);
-            if (BitConverter.IsLittleEndian)
+            //copy chunk into first 16 words w[0..15] of the message schedule array
+            for (int i = 0; i < 16; i++)
             {
-                bytes = bytes.Reverse().ToArray();
-            }
-            var bits = new BitArray(bytes);
-            foreach (var bit in bits)
-            {
-                _message.Add((bool)bit);
-            }
-        }
-
-        private void PaddingAddZeros()
-        {
-            //append zeros
-            int padding = 0;
-            while ((_originalMessageLength + 1 + padding + 64) % 512 != 0)
-            {
-                padding++;
+                words[i] = chunk[i];
             }
 
-            for (int i = 0; i < padding; i++)
+            //Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
+            for (int i = 16; i < 64; i++)
             {
-                _message.Add(false);
+                var s0 = RightRotate(words[i - 15], 7) ^ RightRotate(words[i - 15], 18) ^ words[i - 15] >> 3;
+                var s1 = RightRotate(words[i - 2], 17) ^ RightRotate(words[i - 2], 19) ^ words[i - 2] >> 10;
+
+                words[i] = words[i - 16] + s0 + words[i - 7] + s1;
             }
+
+            return words;
         }
 
-        private void PaddingAddSingle1()
+
+        private void CreateFinalHashValue()
         {
-            //append a single 1
-            _message.Add(true);
+            _finalHashValue = Convert.ToString(_hash0, 16)
+                + Convert.ToString(_hash1, 16)
+                + Convert.ToString(_hash2, 16)
+                + Convert.ToString(_hash3, 16)
+                + Convert.ToString(_hash4, 16)
+                + Convert.ToString(_hash5, 16)
+                + Convert.ToString(_hash6, 16)
+                + Convert.ToString(_hash7, 16);
         }
-        #endregion
+
+        private static UInt32 RightRotate(UInt32 word32bit, byte count) => word32bit >> count | word32bit << 32 - count;
+        //private static UInt32 RotateLeft(UInt32 word32bit, byte count) => word32bit << count | word32bit >> 32 - count;
     }
 }
