@@ -1,4 +1,4 @@
-namespace SHAApi
+namespace BL.HashApi
 {
     public class WeatherForecast
     {

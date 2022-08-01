@@ -34,12 +34,7 @@ namespace BL.Hash.SHA256
 
         #region Constructors
 
-        public SHA256(string message)
-        {
-            _messageAsBytes = new(Encoding.UTF8.GetBytes(message));
-            _messageAsUInt32s = new();
-            _messageLengthBeforePadding = _messageAsBytes.Count;
-        }
+        public SHA256(string message) : this(Encoding.UTF8.GetBytes(message)) { }
 
         public SHA256(byte[] message)
         {
@@ -52,15 +47,15 @@ namespace BL.Hash.SHA256
 
         public string Hash()
         {
-            if (_finalHashValue != null)
-                return _finalHashValue;
+            if (IsMessageHashed())
+                return _finalHashValue!;
 
             Padding();
             CreateMessageAsUInt32Array();
-            ProcessMessage();
-            CreateFinalHashValue();
+            HashMessage();
             return _finalHashValue!;
         }
+
 
         #region Padding
 
@@ -102,10 +97,11 @@ namespace BL.Hash.SHA256
             }
         }
 
-        private void ProcessMessage()
+        private void HashMessage()
         {
             CreateChunksFromMessage();
             CompressMessage();
+            CreateFinalHashValue();
         }
         private void CreateChunksFromMessage()
         {
@@ -202,6 +198,11 @@ namespace BL.Hash.SHA256
                 + Convert.ToString(_hash5, 16)
                 + Convert.ToString(_hash6, 16)
                 + Convert.ToString(_hash7, 16);
+        }
+
+        private bool IsMessageHashed()
+        {
+            return _finalHashValue != null;
         }
 
         private static UInt32 RightRotate(UInt32 word32bit, byte count) => word32bit >> count | word32bit << 32 - count;

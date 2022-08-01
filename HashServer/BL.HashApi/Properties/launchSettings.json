@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "SHAApi": {
+    "BL.HashApi": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

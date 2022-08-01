@@ -1,7 +1,0 @@
-﻿using BL.Hash.SHA256;
-
-Console.WriteLine(new SHA256("abc").Hash());
-
-Console.WriteLine(new SHA256("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus elit leo, vel tempor libero suscipit ut. Vestibulum venenatis lacinia dictum. Vivamus dapibus pulvinar neque, consequat aliquet ligula sagittis a. Vestibulum vitae fermentum orci. Pellentesque vitae tincidunt leo. Praesent turpis massa, mollis vitae dolor fringilla, accumsan rutrum turpis. Proin at ante non libero porta congue. Cras et sapien lorem. Aenean sit amet commodo metus. Integer blandit dui non viverra rutrum. Cras dapibus, mi eget consequat condimentum, nibh massa varius magna, vel scelerisque urna sem eget purus. Praesent leo lacus, iaculis vitae felis at, aliquam placerat nunc.").Hash());
-
-Console.WriteLine(new SHA256("Lorum ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus elit leo, vel tempor libero suscipit ut. Vestibulum venenatis lacinia dictum. Vivamus dapibus pulvinar neque, consequat aliquet ligula sagittis a. Vestibulum vitae fermentum orci. Pellentesque vitae tincidunt leo. Praesent turpis massa, mollis vitae dolor fringilla, accumsan rutrum turpis. Proin at ante non libero porta congue. Cras et sapien lorem. Aenean sit amet commodo metus. Integer blandit dui non viverra rutrum. Cras dapibus, mi eget consequat condimentum, nibh massa varius magna, vel scelerisque urna sem eget purus. Praesent leo lacus, iaculis vitae felis at, aliquam placerat nunc.").Hash());

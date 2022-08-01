@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace SHAApi.Controllers
+namespace BL.HashApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
