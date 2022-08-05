@@ -10,4 +10,4 @@ The server will support two routes for now:
 
 sending a message and retrieving a hash: POST api/hash
 
-sending a hash and retrieving any messages corresponding to that hash: GET api/messages
+sending a hash and retrieving any messages corresponding to that hash: GET api/messages/{hash}
