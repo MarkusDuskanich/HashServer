@@ -8,6 +8,6 @@ namespace BL.Hash
 {
     public interface IHash
     {
-        string Hash();
+        string ComputeHash(string value);
     }
 }

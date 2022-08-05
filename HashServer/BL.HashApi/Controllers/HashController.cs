@@ -1,3 +1,4 @@
+using BL.Hash;
 using BL.Hash.SHA256;
 using BL.HashApi.Payloads;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,11 @@ namespace BL.HashApi.Controllers
     {
 
         private readonly ILogger<HashController> _logger;
-
-        public HashController(ILogger<HashController> logger)
+        private readonly IHash _hash;
+        public HashController(ILogger<HashController> logger, IHash hash)
         {
             _logger = logger;
+            _hash = hash;
         }
 
         [HttpPost]
@@ -21,7 +23,7 @@ namespace BL.HashApi.Controllers
         {
             if (hashRequest.Message == null)
                 return BadRequest();
-            return Ok(new SHA256(hashRequest.Message).Hash());
+            return Ok(_hash.ComputeHash(hashRequest.Message));
         }
     }
 }

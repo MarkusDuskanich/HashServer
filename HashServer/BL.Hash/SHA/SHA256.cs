@@ -4,14 +4,14 @@ namespace BL.Hash.SHA256
 {
     public class SHA256 : IHash
     {
-        private UInt32 _hash0 = 0x6a09e667;
-        private UInt32 _hash1 = 0xbb67ae85;
-        private UInt32 _hash2 = 0x3c6ef372;
-        private UInt32 _hash3 = 0xa54ff53a;
-        private UInt32 _hash4 = 0x510e527f;
-        private UInt32 _hash5 = 0x9b05688c;
-        private UInt32 _hash6 = 0x1f83d9ab;
-        private UInt32 _hash7 = 0x5be0cd19;
+        private UInt32 _hash0;
+        private UInt32 _hash1;
+        private UInt32 _hash2;
+        private UInt32 _hash3;
+        private UInt32 _hash4;
+        private UInt32 _hash5;
+        private UInt32 _hash6;
+        private UInt32 _hash7;
 
         private readonly UInt32[] _roundConstants = new UInt32[64]
         {
@@ -25,35 +25,34 @@ namespace BL.Hash.SHA256
             0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
         };
 
-        private readonly Int64 _messageLengthBeforePadding;
-        private readonly List<byte> _messageAsBytes;
-        private readonly List<UInt32> _messageAsUInt32s;
+        private Int64 _messageLengthBeforePadding;
+        private List<byte> _messageAsBytes = default!;
+        private List<UInt32> _messageAsUInt32s = default!;
 
         private UInt32[][] _chunks = default!;
-        private string? _finalHashValue = null;
 
-        #region Constructors
-
-        public SHA256(string message) : this(Encoding.UTF8.GetBytes(message)) { }
-
-        public SHA256(byte[] message)
+        public string ComputeHash(string value)
         {
-            _messageAsBytes = new(message);
-            _messageAsUInt32s = new();
-            _messageLengthBeforePadding = _messageAsBytes.Count;
+            Init(value);
+            Padding();
+            ConvertMessageToUInt32Array();
+            HashMessage();
+            return HashValue();
         }
 
-        #endregion
-
-        public string Hash()
+        private void Init(string value)
         {
-            if (IsMessageHashed())
-                return _finalHashValue!;
+            _hash0 = 0x6a09e667;
+            _hash1 = 0xbb67ae85;
+            _hash2 = 0x3c6ef372;
+            _hash3 = 0xa54ff53a;
+            _hash4 = 0x510e527f;
+            _hash5 = 0x9b05688c;
+            _hash6 = 0x1f83d9ab;
+            _hash7 = 0x5be0cd19;
 
-            Padding();
-            CreateMessageAsUInt32Array();
-            HashMessage();
-            return _finalHashValue!;
+            _messageAsBytes = new(Encoding.UTF8.GetBytes(value));
+            _messageLengthBeforePadding = _messageAsBytes.Count;
         }
 
 
@@ -88,9 +87,10 @@ namespace BL.Hash.SHA256
         }
         #endregion
 
-        private void CreateMessageAsUInt32Array()
+        private void ConvertMessageToUInt32Array()
         {
             var messageAsBytesArray = _messageAsBytes.ToArray();
+            _messageAsUInt32s = new();
             for (int i = 0; i <= messageAsBytesArray.Length - 4; i += 4)
             {
                 _messageAsUInt32s.Add(BitConverter.ToUInt32(messageAsBytesArray, i));
@@ -101,8 +101,8 @@ namespace BL.Hash.SHA256
         {
             CreateChunksFromMessage();
             CompressMessage();
-            CreateFinalHashValue();
         }
+
         private void CreateChunksFromMessage()
         {
             var chunkCount = _messageAsUInt32s.Count / 16;
@@ -188,9 +188,9 @@ namespace BL.Hash.SHA256
             return words;
         }
 
-        private void CreateFinalHashValue()
+        private string HashValue()
         {
-            _finalHashValue = Convert.ToString(_hash0, 16)
+            return Convert.ToString(_hash0, 16)
                 + Convert.ToString(_hash1, 16)
                 + Convert.ToString(_hash2, 16)
                 + Convert.ToString(_hash3, 16)
@@ -198,11 +198,6 @@ namespace BL.Hash.SHA256
                 + Convert.ToString(_hash5, 16)
                 + Convert.ToString(_hash6, 16)
                 + Convert.ToString(_hash7, 16);
-        }
-
-        private bool IsMessageHashed()
-        {
-            return _finalHashValue != null;
         }
 
         private static UInt32 RightRotate(UInt32 word32bit, byte count) => word32bit >> count | word32bit << 32 - count;
