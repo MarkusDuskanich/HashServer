@@ -7,6 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BL.Hash", "BL.Hash\BL.Hash.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BL.HashApi", "BL.HashApi\BL.HashApi.csproj", "{7E2305E7-01EA-4E94-85E2-4B6AAA9CCA05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{1ABD07CC-BA9E-492F-B6F1-E2DE3275486A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C4EC77E-1DAD-4BE6-B26F-51279EDEC789}"
+	ProjectSection(SolutionItems) = preProject
+		..\hashserverdb.sql = ..\hashserverdb.sql
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{1EE53CA0-4E9F-40D2-A490-EC16C327DF7A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +30,14 @@ Global
 		{7E2305E7-01EA-4E94-85E2-4B6AAA9CCA05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E2305E7-01EA-4E94-85E2-4B6AAA9CCA05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E2305E7-01EA-4E94-85E2-4B6AAA9CCA05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ABD07CC-BA9E-492F-B6F1-E2DE3275486A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ABD07CC-BA9E-492F-B6F1-E2DE3275486A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ABD07CC-BA9E-492F-B6F1-E2DE3275486A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ABD07CC-BA9E-492F-B6F1-E2DE3275486A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EE53CA0-4E9F-40D2-A490-EC16C327DF7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EE53CA0-4E9F-40D2-A490-EC16C327DF7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EE53CA0-4E9F-40D2-A490-EC16C327DF7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EE53CA0-4E9F-40D2-A490-EC16C327DF7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

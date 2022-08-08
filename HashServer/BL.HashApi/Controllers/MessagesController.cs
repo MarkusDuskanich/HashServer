@@ -5,6 +5,7 @@ namespace BL.HashApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    
     public class MessagesController : ControllerBase
     {
         private readonly ILogger<HashController> _logger;
