@@ -11,7 +11,7 @@ namespace Models
         }
 
         public Guid Id { get; set; }
-        public string Hash1 { get; set; } = null!;
+        public string HashValue { get; set; } = null!;
 
         public virtual ICollection<Message> Messages { get; set; }
     }

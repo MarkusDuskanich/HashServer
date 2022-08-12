@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
+using Models;
 
-namespace Models
+namespace DAL
 {
-    public partial class hashserverdbContext : DbContext
+    public partial class HashServerDbContext : DbContext
     {
-        public hashserverdbContext()
+        public DbSet<Hash> Hashes { get; set; } = null!;
+        public DbSet<Message> Messages { get; set; } = null!;
+
+
+        public HashServerDbContext()
         {
         }
 
-        public hashserverdbContext(DbContextOptions<hashserverdbContext> options)
+        public HashServerDbContext(DbContextOptions<HashServerDbContext> options)
             : base(options)
         {
         }
-
-        public virtual DbSet<Hash> Hashes { get; set; } = null!;
-        public virtual DbSet<Message> Messages { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,14 +32,14 @@ namespace Models
             {
                 entity.ToTable("hashes");
 
-                entity.HasIndex(e => e.Hash1, "hashes_hash_key")
+                entity.HasIndex(e => e.HashValue, "hashes_hash_key")
                     .IsUnique();
 
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
                     .HasColumnName("id");
 
-                entity.Property(e => e.Hash1).HasColumnName("hash");
+                entity.Property(e => e.HashValue).HasColumnName("hash");
             });
 
             modelBuilder.Entity<Message>(entity =>
