@@ -22,7 +22,9 @@ namespace DAL
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("Host=localhost;Database=hashserverdb;Username=postgres;Password=postgres");
+                optionsBuilder
+                    .UseLazyLoadingProxies()
+                    .UseNpgsql("Host=localhost;Database=hashserverdb;Username=postgres;Password=postgres");
             }
         }
 
@@ -38,9 +40,6 @@ namespace DAL
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
                     .HasColumnName("id");
-
-                entity.HasMany(m => m.Messages)
-                    .WithOne(h => h.Hash);
 
                 entity.Property(e => e.Value).HasColumnName("hash");
             });

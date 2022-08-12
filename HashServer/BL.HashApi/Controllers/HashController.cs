@@ -30,14 +30,8 @@ namespace BL.HashApi.Controllers
             var existingHash = (from e in hashServerDbContext.Hashes where e.Value == hashValue select e).FirstOrDefault();
             if (existingHash != null)
             {
-                foreach (var item in existingHash.Messages)
-                {
-                    _logger.Log(LogLevel.Information, $"{item}");
-                }
                 if (existingHash.Messages.Any(message => message.Value == hashRequest.Message))
-                {
                     return Ok(hashValue);
-                }
 
                 hashServerDbContext.Messages.Add(new()
                 {
