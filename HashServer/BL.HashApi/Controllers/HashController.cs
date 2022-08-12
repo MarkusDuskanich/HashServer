@@ -1,8 +1,7 @@
-using BL.Hash;
 using BL.HashApi.Payloads;
+using BL.Hashing;
 using DAL;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace BL.HashApi.Controllers
@@ -12,8 +11,8 @@ namespace BL.HashApi.Controllers
     public class HashController : ControllerBase
     {
         private readonly ILogger<HashController> _logger;
-        private readonly IHash _hash;
-        public HashController(ILogger<HashController> logger, IHash hash)
+        private readonly IHashing _hash;
+        public HashController(ILogger<HashController> logger, IHashing hash)
         {
             _logger = logger;
             _hash = hash;
@@ -44,7 +43,7 @@ namespace BL.HashApi.Controllers
             else
             {
                 var hashId = Guid.NewGuid();
-                var newHash = new Models.Hash()
+                var newHash = new Hash()
                 {
                     Id = hashId,
                     Value = hashValue,

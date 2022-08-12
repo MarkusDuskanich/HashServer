@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BL.Hash", "BL.Hash\BL.Hash.csproj", "{5570BC9A-35D8-4E34-B5FE-F842EE2CD388}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BL.Hashing", "BL.Hashing\BL.Hashing.csproj", "{5570BC9A-35D8-4E34-B5FE-F842EE2CD388}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BL.HashApi", "BL.HashApi\BL.HashApi.csproj", "{7E2305E7-01EA-4E94-85E2-4B6AAA9CCA05}"
 EndProject

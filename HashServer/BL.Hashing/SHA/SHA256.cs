@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace BL.Hash.SHA256
+namespace BL.Hashing.SHA256
 {
-    public class SHA256 : IHash
+    public class SHA256 : IHashing
     {
         private UInt32 _hash0;
         private UInt32 _hash1;

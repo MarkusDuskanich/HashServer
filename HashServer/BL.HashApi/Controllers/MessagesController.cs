@@ -1,5 +1,4 @@
-﻿using BL.HashApi.Payloads;
-using DAL;
+﻿using DAL;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTO;
 
@@ -7,7 +6,7 @@ namespace BL.HashApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    
+
     public class MessagesController : ControllerBase
     {
         private readonly ILogger<HashController> _logger;
@@ -22,7 +21,7 @@ namespace BL.HashApi.Controllers
         {
             using var hashServerDbContext = new HashServerDbContext();
             var messages = (from h in hashServerDbContext.Hashes where h.Value == hash select h.Messages).FirstOrDefault();
-           
+
             if (messages == null)
                 return NotFound();
 
