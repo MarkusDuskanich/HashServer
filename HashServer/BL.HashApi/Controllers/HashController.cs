@@ -2,6 +2,7 @@ using BL.Hash;
 using BL.HashApi.Payloads;
 using DAL;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace BL.HashApi.Controllers
@@ -10,7 +11,6 @@ namespace BL.HashApi.Controllers
     [Route("api/[controller]")]
     public class HashController : ControllerBase
     {
-
         private readonly ILogger<HashController> _logger;
         private readonly IHash _hash;
         public HashController(ILogger<HashController> logger, IHash hash)
@@ -22,20 +22,28 @@ namespace BL.HashApi.Controllers
         [HttpPost]
         public IActionResult CreateHash([FromBody] HashRequestBody hashRequest)
         {
-            //fix message in db, in context and here
-
             if (hashRequest.Message == null)
                 return BadRequest();
             var hashValue = _hash.ComputeHash(hashRequest.Message);
             using var hashServerDbContext = new HashServerDbContext();
-            var existingHash = (from e in hashServerDbContext.Hashes where e.HashValue == hashValue select e).FirstOrDefault();
+
+            var existingHash = (from e in hashServerDbContext.Hashes where e.Value == hashValue select e).FirstOrDefault();
             if (existingHash != null)
             {
-                if(existingHash.Messages.Any(message => message. == hashRequest.Message))
+                foreach (var item in existingHash.Messages)
+                {
+                    _logger.Log(LogLevel.Information, $"{item}");
+                }
+                if (existingHash.Messages.Any(message => message.Value == hashRequest.Message))
+                {
+                    return Ok(hashValue);
+                }
+
                 hashServerDbContext.Messages.Add(new()
                 {
                     Id = Guid.NewGuid(),
                     Hash = existingHash,
+                    Value = hashRequest.Message,
                     Hashid = existingHash.Id
                 });
             }
@@ -45,23 +53,20 @@ namespace BL.HashApi.Controllers
                 var newHash = new Models.Hash()
                 {
                     Id = hashId,
-                    HashValue = hashValue,
+                    Value = hashValue,
                 };
-                var newMessage = new Models.Message()
+                var newMessage = new Message()
                 {
-                    Hash = newHash,
                     Hashid = hashId,
+                    Value = hashRequest.Message,
                     Id = Guid.NewGuid(),
                 };
-                newHash.Messages = new List<Message>()
-                { 
-                    newMessage
-                };
+
                 hashServerDbContext.Hashes.Add(newHash);
                 hashServerDbContext.Messages.Add(newMessage);
             }
 
-
+            hashServerDbContext.SaveChanges();
             return Ok(hashValue);
         }
     }

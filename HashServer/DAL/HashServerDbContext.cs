@@ -32,14 +32,17 @@ namespace DAL
             {
                 entity.ToTable("hashes");
 
-                entity.HasIndex(e => e.HashValue, "hashes_hash_key")
+                entity.HasIndex(e => e.Value, "hashes_hash_key")
                     .IsUnique();
 
                 entity.Property(e => e.Id)
                     .ValueGeneratedNever()
                     .HasColumnName("id");
 
-                entity.Property(e => e.HashValue).HasColumnName("hash");
+                entity.HasMany(m => m.Messages)
+                    .WithOne(h => h.Hash);
+
+                entity.Property(e => e.Value).HasColumnName("hash");
             });
 
             modelBuilder.Entity<Message>(entity =>
@@ -51,6 +54,7 @@ namespace DAL
                     .HasColumnName("id");
 
                 entity.Property(e => e.Hashid).HasColumnName("hashid");
+                entity.Property(e => e.Value).HasColumnName("message");
 
                 entity.HasOne(d => d.Hash)
                     .WithMany(p => p.Messages)
